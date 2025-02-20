@@ -76,4 +76,22 @@ public class TrackServiceTest {
         verify(this.repositoryMock,times(1)).deleteById(VALID_ID);
     }
 
+    @Test
+    @DisplayName("update should works")
+    void update(){
+
+        when(this.repositoryMock.existsById(VALID_ID)).thenReturn(true);
+        when(this.repositoryMock.existsById(INVALID_ID)).thenReturn(false);
+        when(this.repositoryMock.save(any(TrackEntity.class))).thenReturn(DataDummy.TRACK_2);
+
+        TrackEntity actual = this.trackService.update(DataDummy.TRACK_1,VALID_ID);
+
+        assertEquals(DataDummy.TRACK_2,actual);
+        assertThrows(NoSuchElementException.class,
+                ()-> this.trackService.update(DataDummy.TRACK_1,INVALID_ID));
+        //PODRÍA SER OPCIONAL
+        verify(this.repositoryMock,times(2)).existsById(anyLong());
+
+    }
+
 }
