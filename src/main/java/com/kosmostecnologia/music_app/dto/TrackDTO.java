@@ -1,23 +1,33 @@
 package com.kosmostecnologia.music_app.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import com.kosmostecnologia.music_app.util.JsonUtil;
 
 public class TrackDTO implements Serializable{
 
+	@Serial
+	private static final long serialVersionUID = 5585894285878319988L;
+
 	private Long trackId;
 	private String name;
-	private String lycris;
+	private String lyrics;
 	private AlbumDTO album;
 	
 	public TrackDTO() {}
 
-	public TrackDTO(Long trackId, String name, String lycris, AlbumDTO album) {
+	public TrackDTO(Long trackId, String name, String lyrics, AlbumDTO album) {
 		this.trackId = trackId;
 		this.name = name;
-		this.lycris = lycris;
+		this.lyrics = lyrics;
 		this.album = album;
+	}
+
+	public TrackDTO(long trackId, String name, String lyrics) {
+		this.trackId = trackId;
+		this.name = name;
+		this.lyrics = lyrics;
 	}
 
 	public Long getTrackId() {
@@ -36,12 +46,12 @@ public class TrackDTO implements Serializable{
 		this.name = name;
 	}
 
-	public String getLycris() {
-		return lycris;
+	public String getLyrics() {
+		return lyrics;
 	}
 
-	public void setLycris(String lycris) {
-		this.lycris = lycris;
+	public void setLyrics(String lyrics) {
+		this.lyrics = lyrics;
 	}
 
 	public AlbumDTO getAlbum() {
@@ -76,15 +86,9 @@ public class TrackDTO implements Serializable{
 			return false;
 		TrackDTO other = (TrackDTO) obj;
 		if (trackId == null) {
-			if (other.trackId != null)
-				return false;
-		} else if (!trackId.equals(other.trackId))
-			return false;
-		return true;
+			return other.trackId == null;
+		} else return trackId.equals(other.trackId);
 	}
 
-
-
-	private static final long serialVersionUID = 5585894285878319988L;
 	
 }
