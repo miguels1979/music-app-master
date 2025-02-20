@@ -21,9 +21,8 @@ import java.util.Set;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
-public class TrackServiceTest {
+
+public class TrackServiceTest extends ServiceSpec{
 
     @Mock
     private TrackRepository repositoryMock;
