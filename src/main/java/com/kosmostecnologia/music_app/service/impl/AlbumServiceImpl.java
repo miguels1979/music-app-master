@@ -108,7 +108,7 @@ public class AlbumServiceImpl implements IAlbumService {
 	@Override
 	public AlbumDTO addTrack(TrackDTO track, Long id) {
 		if(!this.albumRepository.findById(id).isPresent()) {
-			throw new NoSuchElementException("The id dont exist");
+			throw new NoSuchElementException("The id don't exist");
 		}
 		AlbumEntity toUpdate = this.albumRepository.findById(id).get();
 		toUpdate.addTrack((TrackEntity) JsonUtil.bodyMapper(track, TrackEntity.class));
