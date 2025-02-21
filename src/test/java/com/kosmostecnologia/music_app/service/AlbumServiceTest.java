@@ -7,6 +7,7 @@ import com.kosmostecnologia.music_app.repository.AlbumRepository;
 import com.kosmostecnologia.music_app.repository.RecordCompanyRepository;
 import com.kosmostecnologia.music_app.repository.TrackRepository;
 import com.kosmostecnologia.music_app.util.DataDummy;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,12 @@ public class AlbumServiceTest extends ServiceSpec {
     void setMocks() {
         when(this.albumRepositoryMock.findById(VALID_ID)).thenReturn(Optional.of(DataDummy.ALBUM_ENTITY));
         when(this.albumRepositoryMock.findById(INVALID_ID)).thenReturn(Optional.empty());
+        when(this.albumRepositoryMock.save(any(AlbumEntity.class))).thenReturn(DataDummy.ALBUM_ENTITY);
+    }
+
+    @AfterEach
+    void resetMocks(){
+        reset(this.albumRepositoryMock);
     }
 
     @Test
@@ -126,9 +133,6 @@ public class AlbumServiceTest extends ServiceSpec {
     @DisplayName("update should throw exception")
     void updateFailure(){
 
-        when(this.albumRepositoryMock.save(any(AlbumEntity.class)))
-                .thenReturn(DataDummy.ALBUM_ENTITY);
-
         assertThrows(NoSuchElementException.class, () -> this.iAlbumService.update(DataDummy.ALBUM_DTO,INVALID_ID));
         verify(this.albumRepositoryMock).findById(INVALID_ID);
         verify(this.albumRepositoryMock, never()).save(any(AlbumEntity.class));
@@ -169,6 +173,82 @@ public class AlbumServiceTest extends ServiceSpec {
                 ()-> this.iAlbumService.findBetweenPrice(minPrice,maxPrice));
 
     }
+
+    @Test
+    @DisplayName("addTrack should works")
+    void addTrackSuccess(){
+
+        //Simula que guarda un album
+        when(this.albumRepositoryMock.save(any(AlbumEntity.class)))
+                .thenReturn(DataDummy.ALBUM_ENTITY);
+
+        //Llamamos al método
+        AlbumDTO actual = this.iAlbumService.addTrack(DataDummy.TRACK_1_DTO,VALID_ID);
+        AlbumDTO expected = DataDummy.ALBUM_DTO;
+
+        //Comparamos resultados
+        assertEquals(expected,actual);
+
+        //Verificamos
+        verify(this.albumRepositoryMock, times(2)).findById(VALID_ID);
+        verify(this.albumRepositoryMock).save(any(AlbumEntity.class));
+
+    }
+
+    @Test
+    @DisplayName("addTrack failure")
+    void addTrackFailure(){
+
+        //Llamamos al método y comparamos resultados
+        assertThrows(NoSuchElementException.class, () -> this.iAlbumService.addTrack(DataDummy.TRACK_1_DTO,INVALID_ID));
+
+        //Verificamos
+        verify(this.albumRepositoryMock).findById(INVALID_ID);
+        verify(this.albumRepositoryMock, never()).save(any(AlbumEntity.class));
+
+    }
+
+
+    @Test
+    @DisplayName("removeTrack success")
+    void removeTrackSuccess(){
+
+        when(this.albumRepositoryMock.save(any(AlbumEntity.class)))
+                .thenReturn(DataDummy.ALBUM_ENTITY);
+
+        //Simula que existe una canción
+        when(this.trackRepositoryMock.existsById(DataDummy.TRACK_1_DTO.getTrackId()))
+                .thenReturn(true);
+
+        //Llamamos al método
+        AlbumDTO actual = this.iAlbumService.removeTrack(DataDummy.TRACK_1_DTO,VALID_ID);
+        AlbumDTO expected = DataDummy.ALBUM_DTO;
+
+        //Comparamos resultados
+        assertEquals(expected,actual);
+
+        //Verificamos
+        verify(this.albumRepositoryMock, times(1)).findById(VALID_ID);
+        verify(this.albumRepositoryMock, times(2)).save(any(AlbumEntity.class));
+
+    }
+
+    @Test
+    @DisplayName("removeTrack failure")
+    void removeTrackFailure(){
+
+        //Simula que NO existe una canción
+        when(this.trackRepositoryMock.existsById(DataDummy.TRACK_1_DTO.getTrackId()))
+                .thenReturn(false);
+
+        //Llamamos al método y comparamos resultados
+        assertThrows(NoSuchElementException.class, () -> this.iAlbumService.removeTrack(DataDummy.TRACK_1_DTO,DataDummy.TRACK_1_DTO.getTrackId()));
+
+        //verificamos
+        verify(this.albumRepositoryMock, never()).save(any(AlbumEntity.class));
+    }
+
+
 
 
 
