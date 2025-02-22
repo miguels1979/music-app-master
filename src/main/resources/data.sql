@@ -1,6 +1,6 @@
 INSERT INTO record_company (tittle) VALUES ('Metal records');
 
-INSERT INTO album (album_id, name, autor, price, tittle) VALUES (100, 'fear of the dark', 'iron maiden', 280.50, 'Metal records');
+INSERT INTO album (album_id, name, autor, price, tittle) VALUES (100, 'fear on the dark', 'iron maiden', 280.50, 'Metal records');
 INSERT INTO album (album_id, name, autor, price, tittle) VALUES (200, 'number of the beast', 'iron maiden', 270.50, 'Metal records');
 
 INSERT INTO track (track_id, name, lycris, album_id) VALUES (100, 'run to the hills', 'some lycris', 100);
