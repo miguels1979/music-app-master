@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -87,6 +88,17 @@ public class AlbumControllerTest extends ControllerSpec{
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.autor").value("Autor updated"));
         verify(this.albumServiceMock).update(eq(albumToUpdate),eq(VALID_ID));
+    }
+
+    @Test
+    @DisplayName("call delete should works")
+    void delete() throws Exception{
+        final String uri =  RESOURCE_PATH + "/" + VALID_ID;
+
+        this.mockMvc.perform(MockMvcRequestBuilders.delete(uri))
+                .andExpect(status().isNoContent());
+
+        verify(this.albumServiceMock).delete(VALID_ID);
     }
 
 
