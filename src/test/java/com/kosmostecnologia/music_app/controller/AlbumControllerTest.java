@@ -15,6 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.NoSuchElementException;
+
+import static com.kosmostecnologia.music_app.util.DataDummy.ALBUM_DTO_INVALID;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -43,6 +46,7 @@ public class AlbumControllerTest extends ControllerSpec{
     @BeforeEach
     void setupMocks(){
         when(this.albumServiceMock.findById(eq(VALID_ID))).thenReturn(DataDummy.ALBUM_DTO);
+        when(this.albumServiceMock.findById(eq(INVALID_ID))).thenThrow(NoSuchElementException.class);
         when(this.albumServiceMock.save(eq(DataDummy.ALBUM_DTO))).thenReturn(DataDummy.ALBUM_DTO);
     }
 
@@ -62,6 +66,18 @@ public class AlbumControllerTest extends ControllerSpec{
    }
 
     @Test
+    @DisplayName("call findByIdException should works")
+    void findByIdException() throws Exception {
+        final String uri = RESOURCE_PATH + "/" + INVALID_ID;
+
+        this.mockMvc.perform(get(uri).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        verify(this.albumServiceMock).findById(eq(INVALID_ID));
+    }
+
+    @Test
     @DisplayName("call save should works")
     void save() throws Exception {
         this.mockMvc.perform(post(RESOURCE_PATH).contentType(MediaType.APPLICATION_JSON)
@@ -69,6 +85,19 @@ public class AlbumControllerTest extends ControllerSpec{
                 .andExpect(status().isCreated());
 
         verify(this.albumServiceMock).save(any(AlbumDTO.class));
+    }
+
+    @Test
+    @DisplayName("call saveException should works")
+    void saveException() throws Exception {
+        this.mockMvc.perform(post(RESOURCE_PATH).contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(DataDummy.ALBUM_DTO_INVALID)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.errors").isMap())
+                .andExpect(jsonPath("$.status").value("BAD_REQUEST"));
+
+
     }
 
     @Test
@@ -100,8 +129,6 @@ public class AlbumControllerTest extends ControllerSpec{
 
         verify(this.albumServiceMock).delete(VALID_ID);
     }
-
-
 }
 
 
