@@ -120,6 +120,24 @@ public class AlbumControllerTest extends ControllerSpec{
     }
 
     @Test
+    @DisplayName("call updateException should works")
+    void updateException() throws Exception {
+        final String uri = RESOURCE_PATH + "/" + INVALID_ID;
+        AlbumDTO albumToUpdate = DataDummy.ALBUM_DTO;
+        albumToUpdate.setAutor("Autor updated");
+
+        when(this.albumServiceMock.update(eq(albumToUpdate), eq(INVALID_ID))).thenThrow(NoSuchElementException.class);
+
+        this.mockMvc.perform(
+                        put(uri)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(this.objectMapper.writeValueAsString(albumToUpdate)))
+                .andExpect(status().isNotFound());
+
+        verify(this.albumServiceMock).update(eq(albumToUpdate),eq(INVALID_ID));
+    }
+
+    @Test
     @DisplayName("call delete should works")
     void delete() throws Exception{
         final String uri =  RESOURCE_PATH + "/" + VALID_ID;
@@ -129,6 +147,18 @@ public class AlbumControllerTest extends ControllerSpec{
 
         verify(this.albumServiceMock).delete(VALID_ID);
     }
+
+    @Test
+    @DisplayName("call deleteException should works")
+    void deleteException() throws Exception{
+        final String uri =  RESOURCE_PATH + "/" + INVALID_ID;
+
+        doThrow(NoSuchElementException.class).when(this.albumServiceMock).delete(eq(INVALID_ID));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.delete(uri)).andExpect(status().isNotFound());
+        verify(this.albumServiceMock).delete(eq(INVALID_ID));
+    }
+
 }
 
 
